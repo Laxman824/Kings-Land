@@ -1,0 +1,27 @@
+name: Run Flask App
+
+on:
+  push:
+    branches: [ master ]  # Adjust branches if needed
+  pull_request:  # Include pull requests if desired
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest  # Adjust OS if needed
+    steps:
+      - uses: actions/checkout@v3  # Checkout code from repository
+      - name: Set up Python environment
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'  # Replace with your required Python version
+      - name: Install dependencies
+        run: |  # Install required Python packages (including `pandas`, `numpy`, etc.)
+          python -m pip install -r requirements.txt
+      - name: Install Jupyter Notebook dependencies (if needed for check2.ipynb)
+        run: |  # Install additional dependencies for Jupyter Notebook, if applicable
+          python -m pip install jupyter
+      - name: Run Jupyter Notebook (replace with script call if not using notebook)
+        run: |  # Execute check2.ipynb, adjust command if different
+          jupyter notebook check2.ipynb
+      - name: Run Flask application
+        run: python3 app.py  # Start your Flask app
