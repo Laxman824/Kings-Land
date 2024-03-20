@@ -36,6 +36,7 @@ def index():
     # Check if the plot images exist
     image_path1 = 'my_plot.png'
     image_path2 = 'my_plot1.png'
+#this code checks for the plots and rearrages
     if os.path.exists(image_path1) and os.path.exists(image_path2):
         return render_template('index.html', image_path1=image_path1, image_path2=image_path2)
     else:
@@ -46,7 +47,7 @@ if __name__ == '__main__':
 
     # Check if the notebook has been modified
     notebook_modified_time = os.path.getmtime(notebook_path)
-
+#check2
     if datetime.fromtimestamp(notebook_modified_time) > datetime.now() - timedelta(days=1):
         execute_notebook(notebook_path)
 
