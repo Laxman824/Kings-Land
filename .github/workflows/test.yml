@@ -2,11 +2,7 @@ name: Run Flask App
 
 on:
   push:
-    branches: 
-      - master  # Adjust if needed, can be '*' for all branches
-  pull_request:
-    branches: 
-      - master  # Adjust if needed
+
 
 jobs:
   build-and-run:
