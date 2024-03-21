@@ -2,8 +2,6 @@ name: Run Flask App
 
 on:
   push:
-    branches:
-      - main  # Adjust the branch name as needed
 
 jobs:
   build-and-run:
@@ -30,45 +28,30 @@ jobs:
         run: |
           jupyter nbconvert --execute --to notebook check2.ipynb
 
+      - name: Create static folder (if it doesn't exist)
+        run: |
+          mkdir -p static  # Ensures static folder exists
+
       - name: Copy plot images to static folder
         run: |
-          mkdir -p static
           cp my_plot.png my_plot1.png static/
 
-      - name: Upload Bokeh plot as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: bokeh-plot
-          path: index.html
+      - name: Overwrite index.html with generated version (if it exists)
+        id: overwrite-index-html
+        if: path.exists('check2.nbconvert.ipynb')  # Only run if file exists
+        run: |
+          mv check2.nbconvert.ipynb index.html
 
-      - name: Download Bokeh plot
-        id: download-artifact
+      - name: Download generated index.html (if uploaded)
+        if: steps.overwrite-index-html.outputs == '1'  # Only download if uploaded
         uses: actions/download-artifact@v3
         with:
-          name: bokeh-plot
+          name: index.html
 
-      - name: Remove existing index.html if exists
+      - name: Deploy Flask application (assuming basic deployment for demo)
         run: |
-          rm -f index.html
-
-      - name: Move downloaded index.html if it exists
-        if: steps.download-artifact.outputs.artifact_files != ''
-        run: |
-          mv ${{ steps.download-artifact.outputs.artifact_files }} index.html
-
-      - name: Commit changes
-        run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git add static/
-          git add index.html
-          git add check2.nbconvert.ipynb
-          git diff-index --quiet HEAD || git commit -m "Add Bokeh plot"
-          git diff-index --quiet HEAD || git commit -m "Update index.html"
-          git diff-index --quiet HEAD || git commit -m "Add plot images"
-          git push
-
-      - name: Run Flask application
-        run: |
-          python3 app.py &
-          sleep 20
+          if [[ -f index.html ]]; then
+            cp index.html .  # Copy downloaded index.html to main directory
+          fi
+          python3 app.py &  # Start Flask app in background
+          sleep 20          # Wait for app to start (adjust as needed)
