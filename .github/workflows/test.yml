@@ -32,9 +32,18 @@ jobs:
         run: |
           mkdir -p static
           cp my_plot.png my_plot1.png static/
+          
+      - name: Upload Bokeh plot as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: bokeh-plot
+          path: index.html
         
-      - name: Overwrite index.html  
-        run: mv check2.nbconvert.ipynb index.html
+      - name: Download Bokeh plot
+        uses: actions/download-artifact@v3
+        with:
+          name: bokeh-plot
+          path: index.html
 
       - name: Commit changes
         run: |
@@ -43,6 +52,7 @@ jobs:
           git add static/
           git add index.html
           git add check2.nbconvert.ipynb
+          git diff-index --quiet HEAD || git commit -m "Add Bokeh plot"
           git diff-index --quiet HEAD || git commit -m "Update index.html"
           git diff-index --quiet HEAD || git commit -m "Add plot images"
           git push
