@@ -28,27 +28,20 @@ jobs:
       run: |
         jupyter nbconvert --execute --to notebook check2.ipynb
 
-    - name: Upload plot images as artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: plot-images
-        path: |
-          my_plot.png
-          my_plot1.png
+    - name: Copy plot images to static folder
+      run: |
+        mkdir -p static
+        cp my_plot.png my_plot1.png static/
 
-    - name: Download plot images
-      uses: actions/download-artifact@v3
-      with:
-        name: plot-images
-        path: static
+    - name: Commit changes
+      run: |
+        git config --global user.email "github-actions@github.com"
+        git config --global user.name "GitHub Actions"
+        git add static/
+        git commit -m "Add plot images"
+        git push
 
     - name: Run Flask application
       run: |
         python3 app.py &
         sleep 20
-
-    - name: Commit changes
-      uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-        commit_message: "Automatically commit changes after running Jupyter Notebook"
-        commit_options: "--author 'GitHub Actions'"
