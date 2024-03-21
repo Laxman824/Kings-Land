@@ -38,7 +38,8 @@ jobs:
         git config --global user.email "github-actions@github.com"
         git config --global user.name "GitHub Actions"
         git add static/
-        git commit -m "Add plot images"
+        git add check2.nbconvert.ipynb
+        git diff-index --quiet HEAD || git commit -m "Add plot images"
         git push
 
     - name: Run Flask application
