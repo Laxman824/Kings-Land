@@ -2,6 +2,8 @@ name: Run Flask App
 
 on:
   push:
+    branches:
+      - main  # Adjust the branch name as needed
 
 jobs:
   build-and-run:
@@ -32,18 +34,27 @@ jobs:
         run: |
           mkdir -p static
           cp my_plot.png my_plot1.png static/
-          
+
       - name: Upload Bokeh plot as artifact
         uses: actions/upload-artifact@v3
         with:
           name: bokeh-plot
           path: index.html
-        
+
       - name: Download Bokeh plot
+        id: download-artifact
         uses: actions/download-artifact@v3
         with:
           name: bokeh-plot
-          path: index.html
+
+      - name: Remove existing index.html if exists
+        run: |
+          rm -f index.html
+
+      - name: Move downloaded index.html if it exists
+        if: steps.download-artifact.outputs.artifact_files != ''
+        run: |
+          mv ${{ steps.download-artifact.outputs.artifact_files }} index.html
 
       - name: Commit changes
         run: |
