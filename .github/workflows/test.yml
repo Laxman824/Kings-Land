@@ -32,13 +32,18 @@ jobs:
       run: |
         mkdir -p static
         cp my_plot.png my_plot1.png static/
+        mkdir -p templates
+        cp index.html templates/index.html
 
     - name: Commit changes
       run: |
         git config --global user.email "github-actions@github.com"
         git config --global user.name "GitHub Actions"
         git add static/
+        git add templates/index.html
         git add check2.nbconvert.ipynb
+        git diff-index --quiet HEAD || git commit -m "Update index.html"
+
         git diff-index --quiet HEAD || git commit -m "Add plot images"
         git push
 
