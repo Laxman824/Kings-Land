@@ -23,4 +23,12 @@ jobs:
         run: |
           jupyter nbconvert --execute --to notebook check2.ipynb
       - name: Run Flask application
-        run: python3 app.py
+        run: |
+          python3 app.py &
+          sleep 20  # Wait for 20 seconds
+          curl -X POST http://127.0.0.1:5000/shutdown  # Trigger server shutdown
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Automatically commit changes after running Jupyter Notebook"
+          commit_options: "--author 'GitHub Actions'"
